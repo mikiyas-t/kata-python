@@ -16,7 +16,7 @@ import logging
 import os.path
 if os.path.isfile("log.txt"):
     os.remove("log.txt")
-logging.basicConfig(filename='log.txt',level=logging.DEBUG)
+logging.basicConfig(filename='log.txt', format='%(asctime)s %(message)s', level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler())
 
 # strongly discourage using console input and output.
@@ -30,12 +30,46 @@ def print(*args, **kwargs):
     raise TypeError("Don't use print, return values from functions or callables.")
 
 def run():
-    """
-    Main entry point for your application.  
-    """
-    pass
+    logging.info("The application is starting. Testing...")
+    generations_analytical(4,2)
+    generations_recursive(4,2)
+    generations_loopy(4,2)
 
-# the functions/classes you write here should have no print or input statements.
+
+# ** we always assume that generation 1 has 2 people ("Adam and Eve" initialization) **
+
+# an analytical expression is easily found by observing the series
+# N(n) = 2*X^(n-1)
+# this is (relatively) the most efficient algorithm for this problem ~ O(1)
+def generations_analytical(n,x):
+    if n < 1 or x < 1:
+        raise ValueError("generation number(n) and children number(x) must be greater than 1.")
+    else:
+        return 2*(x**(n-1))
+
+
+# we can also use a recursive algorithm
+# this is elegant, but less efficient ~ O(n) + f_call overhead
+def generations_recursive(n,x):
+    if n == 1:
+        return 2
+    elif n < 1 or x < 1:
+        raise ValueError("generation number (n) and children number (x) must be greater than 1.")
+    else:
+        return x*generations_recursive(n-1,x)
+
+
+# we can also use a for-loop algorithm ~ O(n)
+def generations_loopy(n,x):
+    if n < 1 or x < 1:
+        raise ValueError("generation number(n) and children number(x) must be greater than 1.")
+    else:
+        current_gen = 2
+        for j in range(2,n+1):
+            current_gen *= x
+        return current_gen
+
+
 
 if __name__ == "__main__" or __name__ == "builtins":
     # Need an environment to run this?
